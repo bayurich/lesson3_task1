@@ -15,16 +15,16 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 
         Thread threadToy = new Thread(null, () -> {
-            while (!Thread.interrupted()){
-                while (volatileSwitch){
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            try {
+                while (!Thread.interrupted()){
+                    Thread.sleep(100);
+                    if (volatileSwitch){
+                        volatileSwitch = false;
+                        myLog(Thread.currentThread().getName() + ": Выключение тумблера");
                     }
-                    volatileSwitch = false;
-                    myLog(Thread.currentThread().getName() + ": Выключение тумблера");
                 }
+            } catch (InterruptedException e) {
+                myLog("threadToy InterruptedException: " + e.getMessage());
             }
         }, "Toy");
 
@@ -50,6 +50,7 @@ public class Main {
 
         threadUser.join();
         myLog("Поток-пользователя завершен");
+
         threadToy.interrupt();
         threadToy.join();
         myLog("Поток-игрушка завершен");
